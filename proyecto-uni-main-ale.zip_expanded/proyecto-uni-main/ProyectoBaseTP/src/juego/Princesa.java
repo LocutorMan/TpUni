@@ -18,8 +18,9 @@ public class Princesa {
     private double angulo;
     private double escala;
     private double VelociodadDesplazamiento;
-    private double desplazamientoSaltar;
-    private double desplazamientoGravedad;
+    private double gravedad;
+    private double salto;
+    private double velocidadSalto;
     private boolean estaApoyado;
     private boolean estaSaltando;
     
@@ -32,18 +33,37 @@ public class Princesa {
         this.angulo = 0;
         this.escala = 0.5;
         this.VelociodadDesplazamiento = 3;
-        this.desplazamientoSaltar = 160;
-        this.desplazamientoGravedad = 0.5;
+		this.gravedad = 0.5;
+		this.salto = 12;
+		this.velocidadSalto = 0;
         this.estaApoyado = false;
         this.estaSaltando = false;
     }
         
     public void dibujarse(Entorno entorno) {
+    	
+		this.velocidadSalto += this.gravedad;
+		this.y += this.velocidadSalto;
+
+
+    	
         if(direccion) {
             entorno.dibujarImagen(this.img, this.x, this.y, this.angulo, this.escala);
         } else {
             entorno.dibujarImagen(this.img2, this.x, this.y, this.angulo, this.escala);
         }
+    }
+    
+    public void gravedad(double gravedad) {
+    	if (estaApoyado) {
+    		this.gravedad = gravedad;
+    		this.estaApoyado = true;
+    		this.estaSaltando = false;
+    	}
+    }
+    
+    public void velocidadSalto(int velocidadSalto) {
+    	this.velocidadSalto = velocidadSalto;
     }
     
     public void moverIzquierda() {
@@ -56,18 +76,9 @@ public class Princesa {
     
     public void saltar() {
         if(!estaSaltando) {
-            y -= desplazamientoSaltar;
-            
-            // -------------------- AGREGAR ACA EL SPRITE --------------------
-            
+			this.velocidadSalto -= this.salto;
             estaSaltando = true;
             estaApoyado = false;
-        }
-    }
-
-    public void gravedad() {
-        if (!estaApoyado) {
-            y += desplazamientoGravedad;
         }
     }
 
@@ -123,4 +134,3 @@ public class Princesa {
         this.y = y;
     }
 }
-

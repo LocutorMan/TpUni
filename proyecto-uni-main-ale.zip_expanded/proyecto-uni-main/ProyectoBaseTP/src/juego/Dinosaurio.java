@@ -17,9 +17,9 @@ public class Dinosaurio {
 	private double desplazamientoGravedad;
 	private boolean estaApoyado;
 	private boolean movDino;
-	
-	//constructor de dinosaurio
-	
+
+	// constructor de dinosaurio
+
 	public Dinosaurio(double x, double y) {
 		this.img = Herramientas.cargarImagen("dinoder.png");
 		this.img2 = Herramientas.cargarImagen("dinoizq.png");
@@ -33,8 +33,8 @@ public class Dinosaurio {
 		this.estaApoyado = false;
 		this.movDino = true;
 	}
-	
-	//dibuja al dinosaurio y la direccion donde esta mirando la imagen
+
+	// dibuja al dinosaurio y la direccion donde esta mirando la imagen
 	public void dibujar(Entorno entorno) {
 		if (direccion) {
 			entorno.dibujarImagen(this.img, this.x, this.y, this.angulo, this.escala);
@@ -42,44 +42,43 @@ public class Dinosaurio {
 			entorno.dibujarImagen(this.img2, this.x, this.y, this.angulo, this.escala);
 		}
 	}
-	
-	//Hace que el dinosaurio se mueva, y si choca contra un borde de la pantalla cambia de direccion
-	
+
+	// Hace que el dinosaurio se mueva, y si choca contra un borde de la pantalla
+	// cambia de direccion
+
 	public void direccion(Entorno e) {
-		if(this.getDerecha() > e.ancho() || this.getIzquierda() < 0) {
+		if (this.getDerecha() > e.ancho() || this.getIzquierda() < 0) {
 			movDino = !movDino;
 		}
-        if(movDino) {
-        	direccion=movDino;
-        	this.moverDerecha();
-        }
-        if(!movDino) {
-        	direccion=movDino;
-        	this.moverIzquierda();
-        }
+		if (movDino) {
+			direccion = movDino;
+			this.moverDerecha();
+		}
+		if (!movDino) {
+			direccion = movDino;
+			this.moverIzquierda();
+		}
 	}
-	
-	//crea una columna de dinosaurios con los espacios y la cantidad de dinosaurios
-	
+
+	// crea una columna de dinosaurios con los espacios y la cantidad de dinosaurios
+
 	public static Dinosaurio[] dinos(int cant, double x, double y, double espacioHorizontal, double espacioVertical) {
-	    Dinosaurio[] dinos = new Dinosaurio[cant];
-	    for (int i = 0; i < cant; i++) {
-	        dinos[i] = new Dinosaurio(x + i * espacioHorizontal, y + i * espacioVertical);
-	    }
-	    return dinos;
+		Dinosaurio[] dinos = new Dinosaurio[cant];
+		for (int i = 0; i < cant; i++) {
+			dinos[i] = new Dinosaurio(x + i * espacioHorizontal, y + i * espacioVertical);
+		}
+		return dinos;
 	}
-	
-	//retorna true si los dinosaurios estan superpuestos
-	
-	public static boolean dinosSuperpuestos(Dinosaurio a,Dinosaurio b) {
-		if(a.getIzquierda() == b.getIzquierda() && a.getDerecha() == b.getDerecha() 
-				&& a.getPiso() == b.getPiso() && a.getTecho()==b.getTecho()) {
+
+	// retorna true si los dinosaurios estan superpuestos
+
+	public static boolean dinosSuperpuestos(Dinosaurio a, Dinosaurio b) {
+		if (a.getIzquierda() == b.getIzquierda() && a.getDerecha() == b.getDerecha() && a.getPiso() == b.getPiso()
+				&& a.getTecho() == b.getTecho()) {
 			return true;
 		}
 		return false;
 	}
-
-
 
 	public void moverIzquierda() {
 		x -= VelociodadDesplazamiento;

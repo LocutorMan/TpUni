@@ -29,7 +29,7 @@ public class Juego extends InterfaceJuego {
 
 		// Filas de bloques
 		this.primerFila = Bloques.crearFilaDeBloques(21, 18, 580, 39.5);
-		this.bloques = Bloques.crearMultiplesFilasDeBloques(4, 21, 18, 434, 39.5, 146);
+		this.bloques = Bloques.crearMultiplesFilasDeBloques(4, 24, 18, 434, 39.5, 146);
 
 		// Princesa
 		this.princesa = new Princesa(400, 525);
@@ -38,9 +38,9 @@ public class Juego extends InterfaceJuego {
 		this.dinosaurio = new Dinosaurio(120, 525);
 
 		// Dinosaurios
-		
-		this.dinos1 = Dinosaurio.dinos(4, 50, 85, 20, 146);//columna de la izquierda
-		this.dinos2 = Dinosaurio.dinos(4, 750, 85, -20, 146);//colimna de la derecha
+
+		this.dinos1 = Dinosaurio.dinos(4, 50, 85, 20, 146);// columna de la izquierda
+		this.dinos2 = Dinosaurio.dinos(4, 750, 85, -20, 146);// colimna de la derecha
 
 		// Colisionador
 		this.colisionador = new Colisionador();
@@ -64,28 +64,22 @@ public class Juego extends InterfaceJuego {
 		for (int i = 0; i < bloques.length; i++) {
 			if (contBloques < 5) {
 				bloques[i].dibujarBloqueDestructible(entorno);
-
-				// -------------------- CREAR EN CLASE BLOQUE UN METODO esDestructible, Y DARLE
-				// ACA EL ESTADO true --------------------
-
+				colisionador.manejarColisiones(princesa, bloques);
 				contBloques++;
 			} else {
 				for (int j = 0; j < 3; j++) { // Dibuja tres bloques indestructibles
 					bloques[i + j].dibujarBloqueIndestructible(entorno);
-
-					// -------------------- Y DARLE ACA EL ESTADO false --------------------
-
 				}
 				i += 2;// Se incrementa i en 2 para saltar los bloques ya dibujados
 				contBloques = 0; // Se reinicia el contador al dibujar 3 bloques indestructibles
 			}
 		}
 
-		// Princesa
+		// Princesa 
 		princesa.dibujarse(entorno);
-		princesa.gravedad(); // Se aplica efecto de gravedad
 		colisionador.manejarColisiones(princesa, primerFila);
 		colisionador.manejarColisiones(princesa, bloques);
+//        colisionador.manejarColisiones(princesa, bloques);
 
 		if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
 			princesa.setDireccion(false);
@@ -101,22 +95,22 @@ public class Juego extends InterfaceJuego {
 			princesa.saltar();
 		}
 
-		//Dinosaurio
+		// Dinosaurio
 		// movimiento de dinosaurio, y cambio de direccion si choca una pared
 
 		for (int i = 0; i < dinos1.length; i++) {
-			//primer columna de dinos	
-			dinos1[i].dibujar(entorno);//dibuja al dinosaurio en la posicion i
-			dinos1[i].direccion(entorno);//direcciona al dinosaurio
-			dinos1[i].gravedad();//si el dinosaurio no esta apoyado cae
-			colisionador.manejarColisiones(dinos1[i], primerFila);//comprueba si esta apoyado
-			colisionador.manejarColisiones(dinos1[i], bloques);//comprueba si esta apoyado
-			//segunda columna de dinos
-			dinos2[i].dibujar(entorno);//dibuja al dinosaurio en la posicion i
-			dinos2[i].direccion(entorno);//direcciona al dinosaurio
-			dinos2[i].gravedad();//si el dinosaurio no esta apoyado cae
-			colisionador.manejarColisiones(dinos2[i], primerFila);//compruba si esta apoyado
-			colisionador.manejarColisiones(dinos2[i], bloques);//comprueba si esta apoyado
+			// primer columna de dinos
+			dinos1[i].dibujar(entorno);// dibuja al dinosaurio en la posicion i
+			dinos1[i].direccion(entorno);// direcciona al dinosaurio
+			dinos1[i].gravedad();// si el dinosaurio no esta apoyado cae
+			colisionador.manejarColisiones(dinos1[i], primerFila);// comprueba si esta apoyado
+			colisionador.manejarColisiones(dinos1[i], bloques);// comprueba si esta apoyado
+			// segunda columna de dinos
+			dinos2[i].dibujar(entorno);// dibuja al dinosaurio en la posicion i
+			dinos2[i].direccion(entorno);// direcciona al dinosaurio
+			dinos2[i].gravedad();// si el dinosaurio no esta apoyado cae
+			colisionador.manejarColisiones(dinos2[i], primerFila);// compruba si esta apoyado
+			colisionador.manejarColisiones(dinos2[i], bloques);// comprueba si esta apoyado
 
 		}
 
