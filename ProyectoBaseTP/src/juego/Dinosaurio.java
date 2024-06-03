@@ -85,10 +85,6 @@ public class Dinosaurio {
 		}
 		return false;
 	}
-	
-	public void medio() {
-		
-	}
 
 	public void moverIzquierda() {
 		x -= VelociodadDesplazamiento;

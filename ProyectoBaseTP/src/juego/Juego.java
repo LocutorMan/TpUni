@@ -17,6 +17,7 @@ public class Juego extends InterfaceJuego {
 	private Dinosaurio[] dinos1;
 	private Dinosaurio[] dinos2;
 	private Bomba bomba;
+	private Magma magma;
 
 	Juego() {
 		// Inicializa el objeto entorno
@@ -37,7 +38,7 @@ public class Juego extends InterfaceJuego {
 
 		// Dinosaurio
 		this.dinosaurio = new Dinosaurio(120, 525);
-		
+
 		this.bomba = null;
 
 		// Dinosaurios
@@ -48,19 +49,22 @@ public class Juego extends InterfaceJuego {
 		// Colisionador
 		this.colisionador = new Colisionador();
 
+		// Magma que va subiendo
+		this.magma = new Magma(400, 850);
+
 		// Inicia el juego!
 		this.entorno.iniciar();
 	}
 
 	public void tick() {
-		
+
 		for (int i = 0; i < dinos1.length; i++) {
-	        if (colisionador.dinoPrincesa(princesa, dinos1[i]) || colisionador.dinoPrincesa(princesa, dinos2[i])) {
-	            princesa = null; // La princesa es null si toca un dinosaurio
-	            break; // Sal del bucle una vez que se haya detectado una colisión
-	        }
-	    }
-		
+			if (colisionador.dinoPrincesa(princesa, dinos1[i]) || colisionador.dinoPrincesa(princesa, dinos2[i])) {
+				princesa = null; // La princesa es null si toca un dinosaurio
+				break; // Sal del bucle una vez que se haya detectado una colisión
+			}
+		}
+
 		// Procesamiento de un instante de tiempo
 		// ...
 		// Fondo
@@ -86,26 +90,27 @@ public class Juego extends InterfaceJuego {
 			}
 		}
 
-		// Princesa 
-		if(princesa!=null) {
-		princesa.dibujarse(entorno);
-		colisionador.manejarColisiones(princesa, primerFila);
-		colisionador.manejarColisiones(princesa, bloques);
+		// Princesa
+		if (princesa != null) {
+			princesa.dibujarse(entorno);
+			colisionador.manejarColisiones(princesa, primerFila);
+			colisionador.manejarColisiones(princesa, bloques);
 //        colisionador.manejarColisiones(princesa, bloques);
 
-		if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
-			princesa.setDireccion(false);
-			princesa.moverIzquierda();
-		}
+			if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
+				princesa.setDireccion(false);
+				princesa.moverIzquierda();
+			}
 
-		if (entorno.estaPresionada(entorno.TECLA_DERECHA)) {
-			princesa.setDireccion(true);
-			princesa.moverDerecha();
-		}
+			if (entorno.estaPresionada(entorno.TECLA_DERECHA)) {
+				princesa.setDireccion(true);
+				princesa.moverDerecha();
+			}
 
-		if (entorno.sePresiono(entorno.TECLA_ESPACIO)) {
-			princesa.saltar();
-		}}
+			if (entorno.sePresiono(entorno.TECLA_ESPACIO)) {
+				princesa.saltar();
+			}
+		}
 
 		// Dinosaurio
 		// movimiento de dinosaurio, y cambio de direccion si choca una pared
@@ -116,7 +121,7 @@ public class Juego extends InterfaceJuego {
 			dinos1[i].direccion(entorno);// direcciona al dinosaurio
 			dinos1[i].gravedad();// si el dinosaurio no esta apoyado cae
 			colisionador.manejarColisiones(dinos1[i], primerFila);// comprueba si esta apoyado
-			colisionador.manejarColisiones(dinos1[i], bloques);// comprueba si esta apoyado			
+			colisionador.manejarColisiones(dinos1[i], bloques);// comprueba si esta apoyado
 			// segunda columna de dinos
 			dinos2[i].dibujar(entorno);// dibuja al dinosaurio en la posicion i
 			dinos2[i].direccion(entorno);// direcciona al dinosaurio
@@ -125,7 +130,12 @@ public class Juego extends InterfaceJuego {
 			colisionador.manejarColisiones(dinos2[i], bloques);// comprueba si esta apoyado
 
 		}
-		if(princesa==null) {
+		magma.dibujar(entorno);
+		if (princesa != null) {
+			
+			magma.subir();
+		}
+		if (princesa == null) {
 			fondo.juegoTermiando(entorno);
 		}
 
