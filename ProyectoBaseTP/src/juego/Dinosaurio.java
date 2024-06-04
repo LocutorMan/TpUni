@@ -18,9 +18,10 @@ public class Dinosaurio {
 	private boolean estaApoyado;
 	private boolean movDino;
 	private Bomba bomba;
+	private int contadorBomba;
 	
 
-	// constructor de dinosaurio
+	// Constructor de dinosaurio
 
 	public Dinosaurio(double x, double y) {
 		this.img = Herramientas.cargarImagen("dinoder.png");
@@ -34,11 +35,23 @@ public class Dinosaurio {
 		this.desplazamientoGravedad = 0.5;
 		this.estaApoyado = false;
 		this.movDino = true;
+		this.contadorBomba = 0;
 	}
 	
-	
-	public void disparar(Entorno entorno) {
-		this.bomba = new Bomba(this.x, this.y - 20,5,0);
+	// Disparo de la bomba
+	public void disparo(Entorno entorno) {
+		if (contadorBomba > 2000 && bomba == null) {
+			bomba = new Bomba(this.x, this.y, this.movDino);
+			contadorBomba = 0; // El contador de bomba se resetea despues de disparar
+		}
+		if (bomba != null) {
+			bomba.dibujarBomba(entorno);
+			bomba.moverBomba();
+			if (!bomba.estaDentroDelMapa(entorno)) {
+				bomba = null;
+			}
+		}
+
 	}
 
 	// dibuja al dinosaurio y la direccion donde esta mirando la imagen
@@ -54,6 +67,7 @@ public class Dinosaurio {
 	// cambia de direccion
 
 	public void direccion(Entorno e) {
+		
 		if (this.getDerecha() > e.ancho() || this.getIzquierda() < 0) {
 			movDino = !movDino;
 		}
@@ -76,16 +90,7 @@ public class Dinosaurio {
 		}
 		return dinos;
 	}
-
-	// retorna true si los dinosaurios estan superpuestos
-
-	public static boolean dinosSuperpuestos(Dinosaurio a, Dinosaurio b) {
-		if (a.getIzquierda() == b.getIzquierda() && a.getDerecha() == b.getDerecha() ) {
-			return true;
-		}
-		return false;
-	}
-
+	
 	public void moverIzquierda() {
 		x -= VelociodadDesplazamiento;
 	}
@@ -98,6 +103,26 @@ public class Dinosaurio {
 		if (!estaApoyado) {
 			y += desplazamientoGravedad;
 		}
+	}
+	
+	public void cambiarDireccion() {
+		this.movDino = !this.movDino;
+	}
+	
+	public int getContadorBomba() {
+		return contadorBomba;
+	}
+
+	public void setContadorBomba(int contadorBomba) {
+		this.contadorBomba = contadorBomba;
+	}
+	
+	public Bomba getBomba() {
+		return bomba;
+	}
+
+	public void setBomba(Bomba bomba) {
+		this.bomba = bomba;
 	}
 
 	public double getAlto() {

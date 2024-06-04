@@ -1,5 +1,7 @@
 package juego;
 
+import java.awt.Color;
+
 import entorno.*;
 
 public class Juego extends InterfaceJuego {
@@ -17,7 +19,10 @@ public class Juego extends InterfaceJuego {
 	private Dinosaurio[] dinos1;
 	private Dinosaurio[] dinos2;
 	private Bomba bomba;
+	private Bala bala;
 	private Magma magma;
+	private boolean inmortal;
+	private boolean dire;
 
 	Juego() {
 		// Inicializa el objeto entorno
@@ -31,14 +36,18 @@ public class Juego extends InterfaceJuego {
 
 		// Filas de bloques
 		this.primerFila = Bloques.crearFilaDeBloques(21, 18, 580, 39.5);
-		this.bloques = Bloques.crearMultiplesFilasDeBloques(4, 24, 18, 434, 39.5, 146);
+		this.bloques = Bloques.crearMultiplesFilasDeBloques(4, 21, 18, 434, 39.5, 146);
 
 		// Princesa
 		this.princesa = new Princesa(400, 525);
 
+		// Bala de la princesa
+		this.bala = null;
+
 		// Dinosaurio
 		this.dinosaurio = new Dinosaurio(120, 525);
 
+		// Bomba del dinosaurio
 		this.bomba = null;
 
 		// Dinosaurios
@@ -50,7 +59,7 @@ public class Juego extends InterfaceJuego {
 		this.colisionador = new Colisionador();
 
 		// Magma que va subiendo
-		this.magma = new Magma(400, 850);
+		this.magma = new Magma(400, 900);
 
 		// Inicia el juego!
 		this.entorno.iniciar();
@@ -59,10 +68,13 @@ public class Juego extends InterfaceJuego {
 	public void tick() {
 
 		for (int i = 0; i < dinos1.length; i++) {
-			if (colisionador.dinoPrincesa(princesa, dinos1[i]) || colisionador.dinoPrincesa(princesa, dinos2[i])) {
-				princesa = null; // La princesa es null si toca un dinosaurio
-				break; // Sal del bucle una vez que se haya detectado una colisión
+			if (dinos1[i] != null && dinos2[i] != null) {
+				if (colisionador.dinoPrincesa(princesa, dinos1[i]) || colisionador.dinoPrincesa(princesa, dinos2[i])) {
+					princesa = null; // La princesa es null si toca un dinosaurio
+					break; // Sal del bucle una vez que se haya detectado una colisión
+				}
 			}
+
 		}
 
 		// Procesamiento de un instante de tiempo
@@ -110,33 +122,136 @@ public class Juego extends InterfaceJuego {
 			if (entorno.sePresiono(entorno.TECLA_ESPACIO)) {
 				princesa.saltar();
 			}
+
+			if (entorno.sePresiono('c')) {
+				if (bala == null) {
+					bala = new Bala(princesa.getX(), princesa.getY());
+					dire = princesa.isDireccion();
+				}
+			}
+
+			// Dibujar y mover disparo
+			if (bala != null) {
+				bala.dibujar(entorno);
+				bala.moverDisparo(dire);
+				if (!bala.estaDentroDelMapa(entorno)) {
+					bala = null;
+				}
+			}
 		}
 
 		// Dinosaurio
 		// movimiento de dinosaurio, y cambio de direccion si choca una pared
-
-		for (int i = 0; i < dinos1.length; i++) {
-			// primer columna de dinos
-			dinos1[i].dibujar(entorno);// dibuja al dinosaurio en la posicion i
-			dinos1[i].direccion(entorno);// direcciona al dinosaurio
-			dinos1[i].gravedad();// si el dinosaurio no esta apoyado cae
-			colisionador.manejarColisiones(dinos1[i], primerFila);// comprueba si esta apoyado
-			colisionador.manejarColisiones(dinos1[i], bloques);// comprueba si esta apoyado
-			// segunda columna de dinos
-			dinos2[i].dibujar(entorno);// dibuja al dinosaurio en la posicion i
-			dinos2[i].direccion(entorno);// direcciona al dinosaurio
-			dinos2[i].gravedad();// si el dinosaurio no esta apoyado cae
-			colisionador.manejarColisiones(dinos2[i], primerFila);// compruba si esta apoyado
-			colisionador.manejarColisiones(dinos2[i], bloques);// comprueba si esta apoyado
-
-		}
-		magma.dibujar(entorno);
 		if (princesa != null) {
-			
-			magma.subir();
-		}
-		if (princesa == null) {
-			fondo.juegoTermiando(entorno);
+			// Colision entre princesa y tiranosaurio
+			for (int i = 0; i < dinos1.length; i++) {
+				if (dinos1[i] != null) {
+					dinos1[i].setContadorBomba(dinos1[i].getContadorBomba() + 10);
+					dinos1[i].disparo(entorno);
+					if (dinos1[i].getBomba() != null && dinos1[i].getBomba().colisionaCon(princesa.getX(),
+							princesa.getY(), princesa.getAncho(), princesa.getAlto())) {
+						princesa = null;
+						dinos1[i].setBomba(null); // Eliminar bomba después de colisionar
+					}
+//					if (dinos2[i].getBomba() != null && dinos2[i].getBomba().colisionaCon(princesa.getX(),
+//							princesa.getY(), princesa.getAncho(), princesa.getAlto())) {
+//						princesa = null;
+//						dinos2[i].setBomba(null); // Eliminar bomba después de colisionar
+//					}
+
+					// primer columna de dinos
+					dinos1[i].dibujar(entorno);// dibuja al dinosaurio en la posicion i
+					dinos1[i].direccion(entorno);// direcciona al dinosaurio
+					dinos1[i].gravedad();// si el dinosaurio no esta apoyado cae
+					colisionador.manejarColisiones(dinos1[i], primerFila);// comprueba si esta apoyado
+					colisionador.manejarColisiones(dinos1[i], bloques);// comprueba si esta apoyado
+					if (bala != null && colisionador.detectarColision(bala, dinos1[i])) {
+						dinos1[i] = null; // Eliminar tiranosaurio
+						bala = null; // Eliminar disparo
+					}
+					if (bala != null && dinos1[i].getBomba() != null
+							&& bala.colisionaCon(dinos1[i].getBomba().getX(),
+									dinos1[i].getBomba().getY(), dinos1[i].getBomba().getAncho(),
+									dinos1[i].getBomba().getAlto())) {
+						bala = null; // Eliminar disparo
+						dinos1[i].setBomba(null); // Eliminar bomba
+					}
+				}
+			}
+			// segunda columna de dinos
+//				if (dinos2[i] != null) {
+//					dinos2[i].setContadorBomba(dinos1[i].getContadorBomba() + 10);
+//					dinos2[i].disparo(entorno);
+			for (int i = 0; i < dinos1.length; i++) {
+				if (dinos2[i] != null) {
+					dinos2[i].setContadorBomba(dinos2[i].getContadorBomba() + 10);
+					dinos2[i].disparo(entorno);
+					if (dinos2[i].getBomba() != null && dinos2[i].getBomba().colisionaCon(princesa.getX(),
+							princesa.getY(), princesa.getAncho(), princesa.getAlto())) {
+						princesa = null;
+						dinos2[i].setBomba(null); // Eliminar bomba después de colisionar
+					}
+					dinos2[i].dibujar(entorno);// dibuja al dinosaurio en la posicion i
+					dinos2[i].direccion(entorno);// direcciona al dinosaurio
+					dinos2[i].gravedad();// si el dinosaurio no esta apoyado cae
+					colisionador.manejarColisiones(dinos2[i], primerFila);// compruba si esta apoyado
+					colisionador.manejarColisiones(dinos2[i], bloques);// comprueba si esta apoyado
+					if (bala != null && colisionador.detectarColision(bala, dinos2[i])) {
+						dinos2[i] = null; // Eliminar tiranosaurio
+						bala = null; // Eliminar disparo
+					}
+					if (bala != null && dinos2[i].getBomba() != null
+							&& bala.colisionaCon(dinos2[i].getBomba().getX(),
+									dinos2[i].getBomba().getY(), dinos2[i].getBomba().getAncho(),
+									dinos2[i].getBomba().getAlto())) {
+						bala = null; // Eliminar disparo
+						dinos2[i].setBomba(null); // Eliminar bomba
+					}
+				}
+				// cambio de direccion si chocan
+				for (int j = 0; j < dinos1.length; j++) {
+					// si colisionan cambia la direccion de los dinosaurios
+					if (dinos1[i] != null && dinos2[j] != null && colisionador.colisionDeDinos(dinos1[i], dinos2[j])) {
+						dinos1[i].cambiarDireccion();
+						dinos2[j].cambiarDireccion();
+					}
+				}
+				for (int j = 0; j < dinos1.length; j++) {
+					// si colisionan cambia la direccion de los dinosaurios
+					if (dinos2[i] != null && dinos2[j] != null && colisionador.colisionDeDinos(dinos2[i], dinos2[j])) {
+						dinos2[i].cambiarDireccion();
+						dinos2[j].cambiarDireccion();
+					}
+				}
+				for (int k = 0; k < dinos1.length; k++) {
+					// si colisionan cambia la direccion de los dinosaurios
+					if (dinos1[i] != null && dinos1[k] != null && colisionador.colisionDeDinos(dinos1[i], dinos1[k])) {
+						dinos1[i].cambiarDireccion();
+						dinos1[k].cambiarDireccion();
+					}
+				}
+
+//				if (bala != null && colisionador.detectarColision(bala, dinos1[i])) {
+//					dinos1[i] = null; // Eliminar tiranosaurio
+//					bala = null; // Eliminar disparo
+//				}
+//				if (bala != null && colisionador.detectarColision(bala, dinos2[i])) {
+//					dinos2[i] = null; // Eliminar tiranosaurio
+//					bala = null; // Eliminar disparo
+//				}
+
+			}
+
+			// dibuja el magma y avanza para arriba si la princesa NO es null
+			magma.dibujar(entorno);
+			if (princesa != null) {
+				magma.subir();
+			}
+
+			// si la princesa es null aparece la pantalla de juego terminado
+			if (princesa == null) {
+				fondo.juegoTermiando(entorno);
+			}
 		}
 
 	}

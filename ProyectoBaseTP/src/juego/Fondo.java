@@ -26,7 +26,7 @@ public class Fondo {
 	}
 	
 	public void juegoTermiando(Entorno entorno) {
-		entorno.dibujarImagen(gameover, this.x, this.y, this.anguloFondo, 0.820);
+		entorno.dibujarImagen(gameover, this.x, this.y, this.anguloFondo, 0.20);
 	}
 	
 	public double getX() {

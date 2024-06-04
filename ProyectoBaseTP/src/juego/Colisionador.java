@@ -78,12 +78,34 @@ public class Colisionador {
 
  		dinosaurio.setEstaApoyado(estaApoyada); // Se informa si el Dinosaurio esta sobre un bloque o no
  	}
-
+ 	
+ 	// Verifica la colision de la princesa con el dinosaurio
  	public boolean dinoPrincesa(Princesa p,Dinosaurio d) {
  		if(p!=null) {
- 		return p.getDerecha() > d.getIzquierda() && p.getIzquierda() < d.getDerecha();
+ 		return p.getDerecha() > d.getIzquierda() && p.getIzquierda() < d.getDerecha()
+ 				&& p.getPiso() > d.getTecho() && p.getTecho() < d.getPiso();
  	}else {
  		return false;
  	}
  		}
+ 	
+ 	// Verifica la colision entre dinosaurios
+ 	public boolean colisionDeDinos(Dinosaurio d1, Dinosaurio d2) {
+		return d1.getDerecha() > d2.getIzquierda() && d1.getIzquierda() < d2.getDerecha()
+				&& d1.getPiso() > d2.getTecho() && d1.getTecho() < d2.getPiso();
+	}
+ 	
+ 	public boolean detectarColision(Bala b, Dinosaurio d) {
+		return b.getX() < d.getDerecha() && b.getX() + b.getAncho() > d.getIzquierda() && b.getY() < d.getPiso()
+				&& b.getY() + b.getAlto() > d.getTecho();
+	}
+ 	
+// 	public boolean colisionBombaPrincesa(Bomba b, Princesa p) {
+// 		return b.getDerecha() > p.getIzquierda() && b.getIzquierda() < p.getDerecha()
+//				&& b.getPiso() > p.getTecho() && b.getTecho() < p.getPiso();
+// 	}
+// 	
+// 	public boolean chocoCon(double x1, double y1, double x2, double y2, double pixelesColision) {
+//		return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) < pixelesColision * pixelesColision;
+//	}
 }

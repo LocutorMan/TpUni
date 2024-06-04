@@ -40,7 +40,9 @@ public class Princesa {
         this.estaSaltando = false;
     }
         
-    public void dibujarse(Entorno entorno) {
+   
+
+	public void dibujarse(Entorno entorno) {
     	
 		this.velocidadSalto += this.gravedad;
 		this.y += this.velocidadSalto;
@@ -133,4 +135,16 @@ public class Princesa {
     public void setY(double y) {
         this.y = y;
     }
+    
+    public double getX() {
+		return x;
+	}
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public double getY() {
+		return y;
+	}
 }
